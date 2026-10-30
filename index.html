@@ -1,1 +1,1080 @@
 
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHERIUM GLASS | Ultra-Futuristic Glassmorphism E-Commerce</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        aether: {
+                            bg: '#05070d',
+                            panel: 'rgba(15, 23, 42, 0.55)',
+                            border: 'rgba(255, 255, 255, 0.12)',
+                            cyan: '#00f2fe',
+                            magenta: '#f355da',
+                            amber: '#fbbf24',
+                            violet: '#8b5cf6',
+                            obsidian: '#0a0d14'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(0, 242, 254, 0.2)' },
+                            '100%': { boxShadow: '0 0 30px rgba(243, 85, 218, 0.4)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- React & Babel CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #05070d;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Fluid Background Elements */
+        .bg-ambient-1 {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-ambient-2 {
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(243, 85, 218, 0.12) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(0,0,0,0) 70%);
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-ambient-3 {
+            position: fixed;
+            top: 40%;
+            left: 30%;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.08) 0%, rgba(0,0,0,0) 65%);
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Dynamic Glass Styles Controlled by Theme Mode */
+        .glass-base {
+            backdrop-filter: blur(var(--glass-blur, 16px));
+            -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+            background: var(--glass-bg, rgba(15, 23, 42, 0.55));
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.12));
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        .glass-card {
+            backdrop-filter: blur(var(--glass-blur, 16px));
+            -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+            background: var(--glass-card-bg, rgba(21, 32, 54, 0.45));
+            border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px -15px rgba(0, 242, 254, 0.2);
+        }
+
+        .glass-input {
+            background: rgba(10, 15, 26, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+        }
+
+        .glass-input:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+            outline: none;
+        }
+
+        .neon-glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+        }
+
+        .neon-glow-magenta {
+            box-shadow: 0 0 20px rgba(243, 85, 218, 0.35);
+        }
+
+        .glass-button {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(243, 85, 218, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            transition: all 0.25s ease;
+        }
+
+        .glass-button:hover {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.4) 0%, rgba(243, 85, 218, 0.4) 100%);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f2fe;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 antialiased selection:bg-aether-cyan selection:text-aether-obsidian">
+
+    <!-- Ambient Gradient Backdrops -->
+    <div class="bg-ambient-1"></div>
+    <div class="bg-ambient-2"></div>
+    <div class="bg-ambient-3"></div>
+
+    <div id="root" class="relative z-10"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // --- MASTER 50,000 PRODUCT DATABASE GENERATOR ARCHITECTURE ---
+        const CATEGORIES = [
+            { id: 'all', name: 'All Ecosystem Products', count: 50000, icon: 'fa-cubes' },
+            { id: 'smart-glassware', name: 'Smart Home & Glassware Tech', count: 8450, icon: 'fa-microchip' },
+            { id: 'culinary-subterranean', name: 'Culinary & Subterranean Appliances', count: 11200, icon: 'fa-utensils' },
+            { id: 'cybernetics', name: 'Cybernetics & Wearables', count: 6800, icon: 'fa-vr-cardboard' },
+            { id: 'ambient-lighting', name: 'Ambient Interior & Architectural Lighting', count: 7100, icon: 'fa-lightbulb' },
+            { id: 'quantum-eco', name: 'Quantum Eco-Gourmet & Hydroponics', count: 5650, icon: 'fa-seedling' },
+            { id: 'precision-tools', name: 'Glass Precision Tools & Craftsmanship', count: 10800, icon: 'fa-gem' }
+        ];
+
+        const GLASS_FINISHES = ['Frosted Crystal', 'Prism Iridescent', 'Obsidian Dark', 'Luminous Amber', 'Aether Cyan', 'Plasma Violet'];
+        
+        const CURRENCIES = {
+            USD: { symbol: '$', rate: 1.0 },
+            EUR: { symbol: '€', rate: 0.92 },
+            GBP: { symbol: '£', rate: 0.79 },
+            BDT: { symbol: '৳', rate: 117.5 },
+            JPY: { symbol: '¥', rate: 155.2 }
+        };
+
+        const IMAGE_POOL = [
+            'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+        ];
+
+        const ADJECTIVES = ['Quantum', 'Aetherium', 'Frosted', 'Luminous', 'Hyper-Glass', 'Prismatic', 'Obsidian', 'Chrono', 'Orbital', 'Sub-Zero'];
+        const NOUNS = ['Decanter', 'Visor', 'Hydro-Vault', 'Pod X1', 'Cellar Array', 'Lighting Matrix', 'Precision Blade', 'Chamber', 'Infuser', 'Harmonizer'];
+
+        // Deterministic generator algorithm capable of serving 50,000 unique SKUs
+        const generateProducts = (count = 100, offset = 0) => {
+            const list = [];
+            for (let i = 0; i < count; i++) {
+                const skuIndex = offset + i + 1;
+                if (skuIndex > 50000) break;
+
+                const catIndex = (skuIndex % (CATEGORIES.length - 1)) + 1;
+                const cat = CATEGORIES[catIndex];
+                const adj = ADJECTIVES[skuIndex % ADJECTIVES.length];
+                const noun = NOUNS[(skuIndex * 3) % NOUNS.length];
+                const finish = GLASS_FINISHES[skuIndex % GLASS_FINISHES.length];
+                const img = IMAGE_POOL[skuIndex % IMAGE_POOL.length];
+                const priceUSD = parseFloat((49.99 + ((skuIndex * 17) % 2450)).toFixed(2));
+                const rating = parseFloat((4.2 + ((skuIndex % 9) * 0.1)).toFixed(1));
+
+                list.push({
+                    sku: `AETH-${String(skuIndex).padStart(5, '0')}`,
+                    name: `${adj} ${finish} ${noun}`,
+                    category: cat.id,
+                    categoryName: cat.name,
+                    priceUSD: priceUSD,
+                    rating: rating,
+                    reviewsCount: 18 + (skuIndex % 340),
+                    finish: finish,
+                    image: img,
+                    inStock: skuIndex % 7 !== 0,
+                    expressShipping: skuIndex % 2 === 0,
+                    desc: `High-precision ${finish.toLowerCase()} engineered with multi-layer vacuum glass composite and quantum thermal stabilization. Designed for ultra-modern residential and cave spaces.`,
+                    making: `Hand-finished borosilicate crystal subjected to 1,400°C plasma annealing and argon molecular sealing.`,
+                    howToUse: `Power on via capacitive touch glass surface or pair with Aetherium Sync App to calibrate temperature, spectrum, and refraction index.`,
+                    warranty: `5-Year Refraction & Structure Guarantee`
+                });
+            }
+            return list;
+        };
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            // Theme state (Visual Glass Intensity)
+            const [glassTheme, setGlassTheme] = useState('obsidian'); // obsidian, frosted, cyber
+            
+            // Search & Filters state
+            const [searchQuery, setSearchQuery] = useState('');
+            const [selectedCategory, setSelectedCategory] = useState('all');
+            const [selectedFinish, setSelectedFinish] = useState('All');
+            const [maxPrice, setMaxPrice] = useState(2500);
+            const [sortBy, setSortBy] = useState('featured');
+            
+            // Currency state
+            const [currency, setCurrency] = useState('USD');
+
+            // Product & Pagination state (50,000 Explorer)
+            const [products, setProducts] = useState([]);
+            const [page, setPage] = useState(1);
+            const [pageSize, setPageSize] = useState(20);
+            const [totalLoadedCount, setTotalLoadedCount] = useState(100);
+
+            // Commerce Drawers & Modals state
+            const [cart, setCart] = useState([]);
+            const [wishlist, setWishlist] = useState([]);
+            const [isCartOpen, setIsCartOpen] = useState(false);
+            const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+            const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
+            const [quickViewProduct, setQuickViewProduct] = useState(null);
+            const [checkoutStep, setCheckoutStep] = useState(null); // null, 1, 2, 3 (Success)
+            const [couponCode, setCouponCode] = useState('');
+            const [discountPercent, setDiscountPercent] = useState(0);
+            const [toast, setToast] = useState(null);
+
+            // Interactive CSS Glass Playground State
+            const [playgroundConfig, setPlaygroundConfig] = useState({
+                blur: 16,
+                bgOpacity: 0.55,
+                borderOpacity: 0.15,
+                borderGlowColor: '#00f2fe'
+            });
+
+            // Initialize products batch
+            useEffect(() => {
+                const initialBatch = generateProducts(200, 0);
+                setProducts(initialBatch);
+            }, []);
+
+            // Apply Theme CSS Custom Variables
+            useEffect(() => {
+                const root = document.documentElement;
+                if (glassTheme === 'frosted') {
+                    root.style.setProperty('--glass-blur', '24px');
+                    root.style.setProperty('--glass-bg', 'rgba(255, 255, 255, 0.08)');
+                    root.style.setProperty('--glass-card-bg', 'rgba(255, 255, 255, 0.05)');
+                    root.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.25)');
+                } else if (glassTheme === 'cyber') {
+                    root.style.setProperty('--glass-blur', '12px');
+                    root.style.setProperty('--glass-bg', 'rgba(10, 15, 30, 0.85)');
+                    root.style.setProperty('--glass-card-bg', 'rgba(15, 23, 42, 0.75)');
+                    root.style.setProperty('--glass-border', 'rgba(0, 242, 254, 0.3)');
+                } else {
+                    // Obsidian Default
+                    root.style.setProperty('--glass-blur', '16px');
+                    root.style.setProperty('--glass-bg', 'rgba(15, 23, 42, 0.55)');
+                    root.style.setProperty('--glass-card-bg', 'rgba(21, 32, 54, 0.45)');
+                    root.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.12)');
+                }
+            }, [glassTheme]);
+
+            // Toast Notification Handler
+            const showToast = (message, type = 'info') => {
+                setToast({ message, type });
+                setTimeout(() => setToast(null), 3000);
+            };
+
+            // Currency Formatter Utility
+            const formatPrice = (priceInUSD) => {
+                const curr = CURRENCIES[currency];
+                const converted = priceInUSD * curr.rate;
+                return `${curr.symbol}${converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            };
+
+            // Load More 50,000 Products Generator Trigger
+            const handleLoadMoreProducts = () => {
+                const nextOffset = products.length;
+                const nextBatch = generateProducts(100, nextOffset);
+                setProducts(prev => [...prev, ...nextBatch]);
+                setTotalLoadedCount(prev => prev + 100);
+                showToast(`Loaded +100 new products from 50,000 SKU database`, 'success');
+            };
+
+            // Cart Actions
+            const addToCart = (product) => {
+                setCart(prev => {
+                    const exists = prev.find(item => item.sku === product.sku);
+                    if (exists) {
+                        return prev.map(item => item.sku === product.sku ? { ...item, qty: item.qty + 1 } : item);
+                    }
+                    return [...prev, { ...product, qty: 1 }];
+                });
+                showToast(`Added ${product.name} to Cart`, 'success');
+            };
+
+            const removeFromCart = (sku) => {
+                setCart(prev => prev.filter(item => item.sku !== sku));
+            };
+
+            const updateCartQty = (sku, delta) => {
+                setCart(prev => prev.map(item => {
+                    if (item.sku === sku) {
+                        const newQty = item.qty + delta;
+                        return newQty > 0 ? { ...item, qty: newQty } : item;
+                    }
+                    return item;
+                }));
+            };
+
+            const toggleWishlist = (product) => {
+                setWishlist(prev => {
+                    const exists = prev.some(item => item.sku === product.sku);
+                    if (exists) {
+                        showToast(`Removed from Wishlist`);
+                        return prev.filter(item => item.sku !== product.sku);
+                    }
+                    showToast(`Added to Wishlist`, 'success');
+                    return [...prev, product];
+                });
+            };
+
+            const handleApplyCoupon = () => {
+                if (couponCode.trim().toUpperCase() === 'GLASS2026') {
+                    setDiscountPercent(20);
+                    showToast('Coupon GLASS2026 applied! 20% Discount unlocked.', 'success');
+                } else {
+                    showToast('Invalid Coupon Code. Try "GLASS2026"', 'error');
+                }
+            };
+
+            // Cart Totals Calculations
+            const cartSubtotalUSD = useMemo(() => {
+                return cart.reduce((sum, item) => sum + (item.priceUSD * item.qty), 0);
+            }, [cart]);
+
+            const discountAmountUSD = (cartSubtotalUSD * discountPercent) / 100;
+            const shippingUSD = cartSubtotalUSD > 500 || cartSubtotalUSD === 0 ? 0 : 25;
+            const cartTotalUSD = cartSubtotalUSD - discountAmountUSD + shippingUSD;
+
+            // Multi-Category Search & Filter Engine
+            const filteredProducts = useMemo(() => {
+                return products.filter(p => {
+                    const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
+                    const matchesFinish = selectedFinish === 'All' || p.finish === selectedFinish;
+                    const matchesPrice = p.priceUSD <= maxPrice;
+                    const matchesQuery = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                         p.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                         p.desc.toLowerCase().includes(searchQuery.toLowerCase());
+                    return matchesCategory && matchesFinish && matchesPrice && matchesQuery;
+                }).sort((a, b) => {
+                    if (sortBy === 'price-low') return a.priceUSD - b.priceUSD;
+                    if (sortBy === 'price-high') return b.priceUSD - a.priceUSD;
+                    if (sortBy === 'rating') return b.rating - a.rating;
+                    return 0; // Default featured
+                });
+            }, [products, selectedCategory, selectedFinish, maxPrice, searchQuery, sortBy]);
+
+            const paginatedProducts = useMemo(() => {
+                const start = (page - 1) * pageSize;
+                return filteredProducts.slice(start, start + pageSize);
+            }, [filteredProducts, page, pageSize]);
+
+            const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1;
+
+            return (
+                <div className="min-h-screen flex flex-col justify-between">
+                    {/* TOAST NOTIFICATION */}
+                    {toast && (
+                        <div className={`fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl font-bold shadow-2xl backdrop-blur-xl border flex items-center gap-3 animate-bounce ${
+                            toast.type === 'error' ? 'bg-red-500/20 border-red-500/50 text-red-200' : 'bg-aether-cyan/20 border-aether-cyan/50 text-aether-cyan'
+                        }`}>
+                            <i className={`fas ${toast.type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}`}></i>
+                            <span className="text-sm">{toast.message}</span>
+                        </div>
+                    )}
+
+                    {/* TOP BRAND HEADER & CONTROL NAVIGATION */}
+                    <header className="sticky top-0 z-40 glass-base border-b border-white/10 px-4 lg:px-8 py-3.5">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                            {/* Brand & Live Counters */}
+                            <div className="flex items-center justify-between w-full md:w-auto gap-6">
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}>
+                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-aether-cyan via-aether-violet to-aether-magenta flex items-center justify-center text-aether-obsidian font-black text-xl shadow-lg neon-glow-cyan">
+                                        <i className="fa-solid fa-cube"></i>
+                                    </div>
+                                    <div>
+                                        <h1 className="font-extrabold text-lg tracking-wider bg-gradient-to-r from-aether-cyan via-white to-aether-magenta bg-clip-text text-transparent">
+                                            AETHERIUM GLASS
+                                        </h1>
+                                        <p className="text-[9px] text-slate-400 tracking-widest uppercase font-mono">Next-Gen Glassmorphism Platform</p>
+                                    </div>
+                                </div>
+
+                                {/* Live Metrics Counters */}
+                                <div className="hidden xl:flex items-center gap-4 pl-6 border-l border-white/10 text-[11px] font-mono">
+                                    <div className="flex items-center gap-1.5 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-white/5">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                        <span className="text-slate-400">Indexed SKUs:</span>
+                                        <span className="text-aether-cyan font-bold">50,000</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-white/5">
+                                        <span className="text-slate-400">Active Carts:</span>
+                                        <span className="text-aether-magenta font-bold">1,842</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Search Bar with Multi-Category Real-time Matching */}
+                            <div className="relative w-full md:w-96">
+                                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i className="fas fa-search text-xs"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Search 50,000+ glass items, SKUs, or materials..."
+                                    value={searchQuery}
+                                    onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                                    className="w-full pl-10 pr-10 py-2.5 glass-input rounded-2xl text-xs text-slate-100 placeholder-slate-400 focus:outline-none"
+                                />
+                                {searchQuery && (
+                                    <button onClick={() => setSearchQuery('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white">
+                                        <i className="fas fa-times text-xs"></i>
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Header Quick Controls */}
+                            <div className="flex items-center gap-3 w-full md:w-auto justify-end text-xs">
+                                {/* Currency Selector */}
+                                <select
+                                    value={currency}
+                                    onChange={(e) => setCurrency(e.target.value)}
+                                    className="bg-slate-900/80 border border-white/10 rounded-xl px-2.5 py-2 text-slate-200 text-xs focus:outline-none"
+                                >
+                                    {Object.keys(CURRENCIES).map(c => <option key={c} value={c}>{c} ({CURRENCIES[c].symbol})</option>)}
+                                </select>
+
+                                {/* Theme Mode Switcher */}
+                                <div className="flex items-center bg-slate-900/80 border border-white/10 rounded-xl p-1">
+                                    <button
+                                        onClick={() => setGlassTheme('obsidian')}
+                                        title="Obsidian Dark Glass"
+                                        className={`px-2 py-1 rounded-lg transition ${glassTheme === 'obsidian' ? 'bg-aether-cyan/20 text-aether-cyan font-bold' : 'text-slate-400'}`}
+                                    >
+                                        <i className="fas fa-moon"></i>
+                                    </button>
+                                    <button
+                                        onClick={() => setGlassTheme('frosted')}
+                                        title="Frosted Crystal Glass"
+                                        className={`px-2 py-1 rounded-lg transition ${glassTheme === 'frosted' ? 'bg-aether-cyan/20 text-aether-cyan font-bold' : 'text-slate-400'}`}
+                                    >
+                                        <i className="fas fa-snowflake"></i>
+                                    </button>
+                                    <button
+                                        onClick={() => setGlassTheme('cyber')}
+                                        title="Cyber Neon Glass"
+                                        className={`px-2 py-1 rounded-lg transition ${glassTheme === 'cyber' ? 'bg-aether-cyan/20 text-aether-cyan font-bold' : 'text-slate-400'}`}
+                                    >
+                                        <i className="fas fa-bolt"></i>
+                                    </button>
+                                </div>
+
+                                {/* Developer CSS Playground Button */}
+                                <button
+                                    onClick={() => setIsPlaygroundOpen(true)}
+                                    className="p-2.5 rounded-xl bg-slate-900/80 border border-white/10 hover:border-aether-cyan text-aether-cyan transition"
+                                    title="Open Glass UI CSS Playground"
+                                >
+                                    <i className="fas fa-code"></i>
+                                </button>
+
+                                {/* Wishlist Drawer Toggle */}
+                                <button
+                                    onClick={() => setIsWishlistOpen(true)}
+                                    className="relative p-2.5 rounded-xl bg-slate-900/80 border border-white/10 hover:border-aether-magenta text-slate-300 hover:text-aether-magenta transition"
+                                >
+                                    <i className="fas fa-heart"></i>
+                                    {wishlist.length > 0 && (
+                                        <span className="absolute -top-1.5 -right-1.5 bg-aether-magenta text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                                            {wishlist.length}
+                                        </span>
+                                    )}
+                                </button>
+
+                                {/* Cart Slide-out Toggle */}
+                                <button
+                                    onClick={() => setIsCartOpen(true)}
+                                    className="relative px-3.5 py-2.5 rounded-xl glass-button text-white font-bold flex items-center gap-2"
+                                >
+                                    <i className="fas fa-shopping-bag"></i>
+                                    <span className="hidden sm:inline">{formatPrice(cartTotalUSD)}</span>
+                                    {cart.length > 0 && (
+                                        <span className="bg-aether-cyan text-aether-obsidian text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                                            {cart.reduce((a, b) => a + b.qty, 0)}
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <main className="max-w-7xl w-full mx-auto p-4 md:p-8 space-y-8 flex-1">
+                        
+                        {/* HERO GLASS BANNER */}
+                        <div className="relative rounded-3xl glass-base border border-white/15 p-8 md:p-12 overflow-hidden">
+                            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-aether-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+                            <div className="relative z-10 max-w-2xl space-y-4">
+                                <span className="inline-flex items-center gap-2 bg-aether-cyan/10 border border-aether-cyan/30 text-aether-cyan text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-widest font-mono">
+                                    <i className="fas fa-sparkles"></i> 50,000 SKUs Indexed
+                                </span>
+                                <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                                    Luminous Glass. <br />
+                                    <span className="bg-gradient-to-r from-aether-cyan via-aether-violet to-aether-magenta bg-clip-text text-transparent">
+                                        Subterranean Precision.
+                                    </span>
+                                </h2>
+                                <p className="text-slate-300 text-xs md:text-sm leading-relaxed">
+                                    Explore the world's largest catalog of precision borosilicate glassware, subterranean climate vaults, cybernetic displays, and luminous architectural fixtures.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* CATEGORY NAVIGATOR & SECTOR BREAKDOWN (50,000 ITEMS ARCHITECTURE) */}
+                        <section className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-bold tracking-wider uppercase text-slate-400 font-mono flex items-center gap-2">
+                                    <i className="fas fa-sitemap text-aether-cyan"></i> Sector Directory Architecture
+                                </h3>
+                                <span className="text-xs text-slate-500 font-mono">50,000 Total Indexed SKUs</span>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => { setSelectedCategory(cat.id); setPage(1); }}
+                                        className={`p-3.5 rounded-2xl glass-card flex flex-col items-center justify-center text-center gap-2 transition ${
+                                            selectedCategory === cat.id
+                                                ? 'border-aether-cyan bg-aether-cyan/10 text-aether-cyan font-bold shadow-lg shadow-aether-cyan/10'
+                                                : 'text-slate-300 hover:border-white/20'
+                                        }`}
+                                    >
+                                        <i className={`fas ${cat.icon} text-lg mb-1 ${selectedCategory === cat.id ? 'text-aether-cyan' : 'text-slate-400'}`}></i>
+                                        <span className="text-[11px] font-semibold line-clamp-2 leading-tight">{cat.name}</span>
+                                        <span className="text-[9px] font-mono text-slate-400 bg-slate-900/60 px-2 py-0.5 rounded-full border border-white/5">
+                                            {cat.count.toLocaleString()}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* ADVANCED FILTER & SORT TOOLBAR */}
+                        <section className="glass-base p-4 rounded-2xl border border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs">
+                            {/* Glass Finish Filter */}
+                            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                                <span className="text-slate-400 font-mono">Glass Finish:</span>
+                                {['All', ...GLASS_FINISHES].map(finish => (
+                                    <button
+                                        key={finish}
+                                        onClick={() => { setSelectedFinish(finish); setPage(1); }}
+                                        className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition ${
+                                            selectedFinish === finish
+                                                ? 'bg-aether-cyan/20 border border-aether-cyan/50 text-aether-cyan font-bold'
+                                                : 'bg-slate-900/50 border border-white/5 text-slate-300 hover:border-white/20'
+                                        }`}
+                                    >
+                                        {finish}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Max Price & Sort Options */}
+                            <div className="flex items-center gap-4 w-full lg:w-auto justify-between lg:justify-end">
+                                <div className="flex items-center gap-2 font-mono">
+                                    <span className="text-slate-400">Max Price:</span>
+                                    <input
+                                        type="range"
+                                        min="100"
+                                        max="2500"
+                                        step="50"
+                                        value={maxPrice}
+                                        onChange={(e) => setMaxPrice(Number(e.target.value))}
+                                        className="w-24 accent-aether-cyan"
+                                    />
+                                    <span className="text-aether-cyan font-bold">{formatPrice(maxPrice)}</span>
+                                </div>
+
+                                <div className="flex items-center gap-2 font-mono">
+                                    <span className="text-slate-400">Sort:</span>
+                                    <select
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        className="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-1.5 text-slate-200 focus:outline-none"
+                                    >
+                                        <option value="featured">Featured SKUs</option>
+                                        <option value="price-low">Price: Low to High</option>
+                                        <option value="price-high">Price: High to Low</option>
+                                        <option value="rating">Highest Rated</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* PRODUCT CATALOG GRID & DYNAMIC EXPLORER */}
+                        <section className="space-y-6">
+                            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+                                <span>Showing {filteredProducts.length > 0 ? (page - 1) * pageSize + 1 : 0} - {Math.min(page * pageSize, filteredProducts.length)} of {filteredProducts.length.toLocaleString()} items matching criteria</span>
+                                <span>Database Loaded Buffer: {totalLoadedCount} / 50,000</span>
+                            </div>
+
+                            {paginatedProducts.length === 0 ? (
+                                <div className="glass-base p-12 text-center rounded-3xl space-y-3">
+                                    <i className="fas fa-search-minus text-4xl text-slate-500"></i>
+                                    <p className="text-slate-300 font-bold">No products found matching your active filter criteria.</p>
+                                    <button
+                                        onClick={() => { setSelectedCategory('all'); setSelectedFinish('All'); setSearchQuery(''); setMaxPrice(2500); }}
+                                        className="px-4 py-2 bg-aether-cyan/20 border border-aether-cyan/40 text-aether-cyan text-xs font-bold rounded-xl"
+                                    >
+                                        Reset All Filters
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {paginatedProducts.map(product => (
+                                        <div key={product.sku} className="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group">
+                                            <div>
+                                                {/* Product Card Image Container */}
+                                                <div className="relative h-52 bg-slate-900/80 overflow-hidden">
+                                                    <img
+                                                        src={product.image}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                                                    
+                                                    {/* Glass Tag & SKU Badge */}
+                                                    <span className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-aether-cyan border border-aether-cyan/30 text-[9px] font-mono px-2.5 py-1 rounded-full uppercase">
+                                                        {product.sku}
+                                                    </span>
+
+                                                    {/* Wishlist Heart Button */}
+                                                    <button
+                                                        onClick={() => toggleWishlist(product)}
+                                                        className="absolute top-3 right-3 p-2 rounded-full bg-slate-950/80 text-slate-300 hover:text-aether-magenta transition"
+                                                    >
+                                                        <i className={`fas fa-heart ${wishlist.some(w => w.sku === product.sku) ? 'text-aether-magenta' : ''}`}></i>
+                                                    </button>
+
+                                                    <span className="absolute bottom-3 left-3 text-[10px] font-mono text-slate-300 bg-slate-900/90 border border-white/10 px-2 py-0.5 rounded-md">
+                                                        {product.finish}
+                                                    </span>
+                                                </div>
+
+                                                {/* Card Details */}
+                                                <div className="p-4 space-y-2">
+                                                    <div className="flex items-center justify-between text-xs">
+                                                        <span className="text-amber-400 font-bold flex items-center gap-1">
+                                                            <i className="fas fa-star text-[10px]"></i> {product.rating} ({product.reviewsCount})
+                                                        </span>
+                                                        <span className="text-emerald-400 font-mono text-[10px]">● In Stock</span>
+                                                    </div>
+
+                                                    <h4 className="font-bold text-sm text-slate-100 group-hover:text-aether-cyan transition line-clamp-1">
+                                                        {product.name}
+                                                    </h4>
+
+                                                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                                                        {product.desc}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Card Footer Actions */}
+                                            <div className="p-4 pt-0 flex items-center justify-between gap-2 border-t border-white/5 mt-2">
+                                                <div>
+                                                    <p className="text-[10px] text-slate-400 font-mono">Price</p>
+                                                    <p className="text-sm font-extrabold text-aether-cyan font-mono">{formatPrice(product.priceUSD)}</p>
+                                                </div>
+
+                                                <div className="flex items-center gap-1.5">
+                                                    <button
+                                                        onClick={() => setQuickViewProduct(product)}
+                                                        className="p-2 rounded-xl bg-slate-900/80 border border-white/10 text-slate-300 hover:text-white hover:border-white/30 text-xs"
+                                                        title="Quick View & Spec Sheet"
+                                                    >
+                                                        <i className="fas fa-eye"></i>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => addToCart(product)}
+                                                        className="px-3 py-2 rounded-xl glass-button text-xs font-bold text-white flex items-center gap-1.5"
+                                                    >
+                                                        <i className="fas fa-plus"></i> Add
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* PAGINATION & 50,000 SKU BATCH LOAD ENGINE */}
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10 text-xs">
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        disabled={page === 1}
+                                        onClick={() => setPage(p => Math.max(p - 1, 1))}
+                                        className="px-3 py-2 rounded-xl bg-slate-900 border border-white/10 text-slate-300 disabled:opacity-40"
+                                    >
+                                        <i className="fas fa-chevron-left mr-1"></i> Prev
+                                    </button>
+                                    <span className="font-mono text-slate-400">Page {page} of {totalPages}</span>
+                                    <button
+                                        disabled={page >= totalPages}
+                                        onClick={() => setPage(p => Math.min(p + 1, totalPages))}
+                                        className="px-3 py-2 rounded-xl bg-slate-900 border border-white/10 text-slate-300 disabled:opacity-40"
+                                    >
+                                        Next <i className="fas fa-chevron-right ml-1"></i>
+                                    </button>
+                                </div>
+
+                                {/* Generator Load More Trigger */}
+                                <button
+                                    onClick={handleLoadMoreProducts}
+                                    className="px-5 py-2.5 rounded-2xl bg-aether-cyan/10 border border-aether-cyan/40 text-aether-cyan font-bold hover:bg-aether-cyan/20 transition flex items-center gap-2"
+                                >
+                                    <i className="fas fa-database"></i> Generate Next +100 SKUs (From 50,000 DB)
+                                </button>
+                            </div>
+                        </section>
+                    </main>
+
+                    {/* QUICK VIEW & SPECS MODAL */}
+                    {quickViewProduct && (
+                        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="glass-base max-w-2xl w-full p-6 md:p-8 rounded-3xl border border-aether-cyan/30 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+                                <div className="flex items-start justify-between border-b border-white/10 pb-4">
+                                    <div>
+                                        <span className="text-xs font-mono text-aether-cyan">{quickViewProduct.sku}</span>
+                                        <h3 className="text-xl font-bold text-white">{quickViewProduct.name}</h3>
+                                    </div>
+                                    <button onClick={() => setQuickViewProduct(null)} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white">
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <img src={quickViewProduct.image} className="rounded-2xl w-full h-56 object-cover border border-white/10" />
+                                    <div className="space-y-3 text-xs">
+                                        <div className="bg-slate-900/80 p-3 rounded-xl border border-white/5">
+                                            <p className="text-aether-cyan font-bold">💎 Material Specification</p>
+                                            <p className="text-slate-300 mt-1">{quickViewProduct.finish} borosilicate crystal matrix with plasma coating.</p>
+                                        </div>
+                                        <div className="bg-slate-900/80 p-3 rounded-xl border border-white/5">
+                                            <p className="text-aether-magenta font-bold">⚙️ Precision Manufacturing</p>
+                                            <p className="text-slate-300 mt-1">{quickViewProduct.making}</p>
+                                        </div>
+                                        <div className="bg-slate-900/80 p-3 rounded-xl border border-white/5">
+                                            <p className="text-emerald-400 font-bold">🛡️ Guarantee & Usage</p>
+                                            <p className="text-slate-300 mt-1">{quickViewProduct.warranty}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                                    <span className="text-2xl font-extrabold text-aether-cyan font-mono">{formatPrice(quickViewProduct.priceUSD)}</span>
+                                    <button
+                                        onClick={() => { addToCart(quickViewProduct); setQuickViewProduct(null); }}
+                                        className="glass-button text-white px-6 py-3 rounded-xl font-bold text-xs shadow-lg transition flex items-center gap-2"
+                                    >
+                                        <i className="fas fa-shopping-bag"></i> Add to Cart Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* SHOPPING CART SLIDE-OUT DRAWER */}
+                    {isCartOpen && (
+                        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex justify-end">
+                            <div className="glass-base w-full max-w-md h-full p-6 border-l border-white/10 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                                        <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                                            <i className="fas fa-shopping-bag text-aether-cyan"></i> Cart ({cart.reduce((a,b)=>a+b.qty,0)})
+                                        </h3>
+                                        <button onClick={() => setIsCartOpen(false)} className="text-slate-400 hover:text-white">
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-3 my-6 max-h-[55vh] overflow-y-auto pr-1">
+                                        {cart.length === 0 ? (
+                                            <p className="text-center text-xs text-slate-400 py-12">Your cart is currently empty.</p>
+                                        ) : (
+                                            cart.map(item => (
+                                                <div key={item.sku} className="p-3 bg-slate-900/80 rounded-xl border border-white/10 flex items-center justify-between gap-3 text-xs">
+                                                    <div className="flex-1">
+                                                        <h4 className="font-bold text-white line-clamp-1">{item.name}</h4>
+                                                        <p className="text-aether-cyan font-mono font-bold mt-0.5">{formatPrice(item.priceUSD)}</p>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-2 bg-slate-950 px-2 py-1 rounded-lg border border-white/5">
+                                                        <button onClick={() => updateCartQty(item.sku, -1)} className="text-slate-400 hover:text-white px-1">-</button>
+                                                        <span className="font-mono font-bold text-slate-200">{item.qty}</span>
+                                                        <button onClick={() => updateCartQty(item.sku, 1)} className="text-slate-400 hover:text-white px-1">+</button>
+                                                    </div>
+
+                                                    <button onClick={() => removeFromCart(item.sku)} className="text-slate-500 hover:text-red-400 p-1">
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+
+                                {cart.length > 0 && (
+                                    <div className="space-y-4 pt-4 border-t border-white/10 text-xs">
+                                        {/* Coupon System */}
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Promo Code (e.g. GLASS2026)"
+                                                value={couponCode}
+                                                onChange={(e) => setCouponCode(e.target.value)}
+                                                className="flex-1 p-2 bg-slate-900 border border-white/10 rounded-xl text-xs uppercase"
+                                            />
+                                            <button onClick={handleApplyCoupon} className="px-3 py-2 bg-slate-800 text-slate-200 font-bold rounded-xl hover:bg-slate-700">Apply</button>
+                                        </div>
+
+                                        <div className="space-y-1.5 font-mono">
+                                            <div className="flex justify-between text-slate-400"><span>Subtotal:</span><span>{formatPrice(cartSubtotalUSD)}</span></div>
+                                            {discountPercent > 0 && (
+                                                <div className="flex justify-between text-emerald-400"><span>Discount (20%):</span><span>-{formatPrice(discountAmountUSD)}</span></div>
+                                            )}
+                                            <div className="flex justify-between text-slate-400"><span>Global Shipping:</span><span>{shippingUSD === 0 ? 'FREE' : formatPrice(shippingUSD)}</span></div>
+                                            <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-white/10">
+                                                <span>Total:</span>
+                                                <span className="text-aether-cyan">{formatPrice(cartTotalUSD)}</span>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={() => { setIsCartOpen(false); setCheckoutStep(1); }}
+                                            className="w-full py-3 glass-button text-white font-bold rounded-xl text-xs shadow-lg transition"
+                                        >
+                                            Proceed to Glass Checkout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* CHECKOUT WIZARD MODAL */}
+                    {checkoutStep && (
+                        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="glass-base max-w-md w-full p-6 md:p-8 rounded-3xl border border-aether-cyan/30 space-y-6">
+                                {checkoutStep === 1 && (
+                                    <div className="space-y-4 text-xs">
+                                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                            <i className="fas fa-truck text-aether-cyan"></i> Step 1: Shipping Destination
+                                        </h3>
+                                        <input type="text" placeholder="Full Name" className="w-full p-3 glass-input rounded-xl text-slate-100" />
+                                        <input type="email" placeholder="Email Address" className="w-full p-3 glass-input rounded-xl text-slate-100" />
+                                        <input type="text" placeholder="Shipping Address / Subterranean Vault #" className="w-full p-3 glass-input rounded-xl text-slate-100" />
+                                        
+                                        <button onClick={() => setCheckoutStep(2)} className="w-full py-3 glass-button text-white font-bold rounded-xl">
+                                            Continue to Payment →
+                                        </button>
+                                    </div>
+                                )}
+
+                                {checkoutStep === 2 && (
+                                    <div className="space-y-4 text-xs">
+                                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                            <i className="fas fa-credit-card text-aether-magenta"></i> Step 2: Payment Method
+                                        </h3>
+                                        <div className="space-y-2">
+                                            <label className="p-3 glass-base rounded-xl flex items-center justify-between cursor-pointer border-aether-cyan border">
+                                                <span>Credit / Glass Card</span>
+                                                <input type="radio" name="pay" defaultChecked />
+                                            </label>
+                                            <label className="p-3 glass-base rounded-xl flex items-center justify-between cursor-pointer">
+                                                <span>Crypto Aether Pass (USDT/ETH)</span>
+                                                <input type="radio" name="pay" />
+                                            </label>
+                                        </div>
+
+                                        <button
+                                            onClick={() => {
+                                                setCart([]);
+                                                setCheckoutStep(3);
+                                            }}
+                                            className="w-full py-3 glass-button text-white font-bold rounded-xl"
+                                        >
+                                            Authorize Payment ({formatPrice(cartTotalUSD)})
+                                        </button>
+                                    </div>
+                                )}
+
+                                {checkoutStep === 3 && (
+                                    <div className="text-center space-y-4 py-4">
+                                        <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/40">
+                                            ✓
+                                        </div>
+                                        <h3 className="text-2xl font-black text-white">Order Confirmed!</h3>
+                                        <p className="text-xs text-slate-300 font-mono">Tracking ID: AETH-DISPATCH-{(Math.random()*100000).toFixed(0)}</p>
+                                        <p className="text-xs text-slate-400">Your products are being prepared for express delivery.</p>
+                                        <button onClick={() => setCheckoutStep(null)} className="w-full py-3 bg-slate-900 border border-white/10 text-white font-bold rounded-xl text-xs">
+                                            Close & Continue Shopping
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* LIVE GLASS UI DEVELOPER PLAYGROUND MODAL */}
+                    {isPlaygroundOpen && (
+                        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="glass-base max-w-3xl w-full p-6 md:p-8 rounded-3xl border border-aether-cyan/30 space-y-6">
+                                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                        <i className="fas fa-code text-aether-cyan"></i> Glass UI CSS Developer Sandbox
+                                    </h3>
+                                    <button onClick={() => setIsPlaygroundOpen(false)} className="text-slate-400 hover:text-white">
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono">
+                                    {/* Controls */}
+                                    <div className="space-y-4 bg-slate-900/80 p-4 rounded-2xl border border-white/5">
+                                        <div>
+                                            <label className="text-slate-300 block mb-1">Backdrop Blur: {playgroundConfig.blur}px</label>
+                                            <input type="range" min="0" max="40" value={playgroundConfig.blur} onChange={(e) => setPlaygroundConfig({...playgroundConfig, blur: Number(e.target.value)})} className="w-full accent-aether-cyan" />
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-300 block mb-1">Background Opacity: {playgroundConfig.bgOpacity}</label>
+                                            <input type="range" min="0.05" max="0.95" step="0.05" value={playgroundConfig.bgOpacity} onChange={(e) => setPlaygroundConfig({...playgroundConfig, bgOpacity: Number(e.target.value)})} className="w-full accent-aether-cyan" />
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-300 block mb-1">Border Opacity: {playgroundConfig.borderOpacity}</label>
+                                            <input type="range" min="0.05" max="0.8" step="0.05" value={playgroundConfig.borderOpacity} onChange={(e) => setPlaygroundConfig({...playgroundConfig, borderOpacity: Number(e.target.value)})} className="w-full accent-aether-cyan" />
+                                        </div>
+                                    </div>
+
+                                    {/* Live Preview Widget */}
+                                    <div className="flex flex-col justify-center items-center p-6 rounded-2xl" style={{
+                                        backdropFilter: `blur(${playgroundConfig.blur}px)`,
+                                        background: `rgba(15, 23, 42, ${playgroundConfig.bgOpacity})`,
+                                        border: `1px solid rgba(255, 255, 255, ${playgroundConfig.borderOpacity})`,
+                                        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+                                    }}>
+                                        <span className="text-aether-cyan font-bold mb-2">Live Glass Card Preview</span>
+                                        <p className="text-center text-slate-300 text-[11px] mb-4">CSS backdrop-filter live rendered component.</p>
+                                        <button className="px-4 py-2 bg-aether-cyan/20 border border-aether-cyan/50 text-aether-cyan font-bold rounded-xl">Glass Component</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* WISHLIST DRAWER MODAL */}
+                    {isWishlistOpen && (
+                        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex justify-end">
+                            <div className="glass-base w-full max-w-md h-full p-6 border-l border-white/10 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                                        <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                                            <i className="fas fa-heart text-aether-magenta"></i> Saved Wishlist ({wishlist.length})
+                                        </h3>
+                                        <button onClick={() => setIsWishlistOpen(false)} className="text-slate-400 hover:text-white">
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-3 my-6 max-h-[70vh] overflow-y-auto">
+                                        {wishlist.length === 0 ? (
+                                            <p className="text-center text-xs text-slate-400 py-12">No saved items in wishlist.</p>
+                                        ) : (
+                                            wishlist.map(item => (
+                                                <div key={item.sku} className="p-3 bg-slate-900/80 rounded-xl border border-white/10 flex items-center justify-between gap-3 text-xs">
+                                                    <div>
+                                                        <h4 className="font-bold text-white line-clamp-1">{item.name}</h4>
+                                                        <p className="text-aether-cyan font-mono font-bold mt-0.5">{formatPrice(item.priceUSD)}</p>
+                                                    </div>
+                                                    <button onClick={() => addToCart(item)} className="px-3 py-1.5 glass-button text-white font-bold rounded-lg text-[10px]">Move to Cart</button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* FOOTER */}
+                    <footer className="glass-base border-t border-white/10 py-6 px-6 text-center text-xs text-slate-400 mt-12">
+                        <p>© 2026 AETHERIUM GLASS. Ultra-Futuristic Glassmorphism E-Commerce Platform. 50,000 SKUs Index.</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
